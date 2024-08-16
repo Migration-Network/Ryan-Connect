@@ -55,3 +55,12 @@ class SearchForm(FlaskForm):
     to_state = SelectField('To State', choices=[], validators=[Optional()])
     to_city = SelectField('To City', choices=[], validators=[Optional()])
     submit = SubmitField('Search')
+
+
+class SearchFriendForm(FlaskForm):
+    search = StringField('Search', validators=[DataRequired()])
+    submit = SubmitField('Search')
+
+
+class AddFriendForm(FlaskForm):
+    submit = SubmitField('Add Friend')
