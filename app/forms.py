@@ -57,6 +57,7 @@ class SearchForm(FlaskForm):
     submit = SubmitField('Search')
 
 
+
 class SearchFriendForm(FlaskForm):
     search = StringField('Search', validators=[DataRequired()])
     submit = SubmitField('Search')
