@@ -20,9 +20,51 @@
 
         <div class="comments-list">
             {% for comment in comments %}
-                {% set comment_data = comment %}
-                {% set depth = 0 %}
-                {% include 'replies.html' %}
+                <div class="comment">
+                    <p>{{ comment.content }} - <strong>{{ comment.user.first_name }}</strong></p>
+                    
+                    <!-- Display the number of replies -->
+                    <div class="comment-footer">
+                        <span class="reply-count">
+                            <i class="fa fa-reply"></i> {{ comment.replies | length }} replies
+                        </span>
+
+                        <!-- Add a toggle button for replies -->
+                        <button class="toggle-replies-button" data-comment-id="{{ comment.id }}">
+                            <i class="fa fa-chevron-down toggle-icon"></i> Show Replies
+                        </button>
+
+                        <!-- Add a Reply button for each comment -->
+                        <button class="reply-button" data-comment-id="{{ comment.id }}">
+                            Reply
+                        </button>
+                    </div>
+
+                    <!-- Replies section (hidden by default) -->
+                    <div id="replies-{{ comment.id }}" class="replies" style="display:none;">
+                        {% for reply in comment.replies %}
+                        <div class="reply">
+                            <p>{{ reply.content }} - <strong>{{ reply.user.first_name }}</strong></p>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Reply form (hidden by default) -->
+                    <div class="reply-form" id="reply-form-{{ comment.id }}" style="display:none;">
+                        <form method="POST" action="">
+                            {{ reply_form.hidden_tag() }}
+                            <div class="form-group">
+                                {{ reply_form.content.label(class="form-label") }}
+                                {{ reply_form.content(class="form-control") }}
+                            </div>
+                            <!-- Hidden input to specify the parent comment ID -->
+                            <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                            <div class="form-group">
+                                {{ reply_form.submit(class="btn btn-secondary") }}
+                            </div>
+                        </form>
+                    </div>
+                </div>
             {% endfor %}
         </div>
     </div>
@@ -46,15 +88,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.relative-time').forEach(function(element) {
-            var dateTime = element.getAttribute('data-time');
-            if (dateTime) {
-                // Assuming the server stores time in UTC
-                var localTime = moment.tz(dateTime, "UTC").local();
-                element.textContent = localTime.fromNow();
-            }
-        });
-
+        // Toggle showing replies
         document.querySelectorAll('.toggle-replies-button').forEach(button => {
             button.addEventListener('click', function() {
                 const repliesSection = document.getElementById(`replies-${this.dataset.commentId}`);
@@ -65,6 +99,7 @@
             });
         });
 
+        // Toggle showing reply form
         document.querySelectorAll('.reply-button').forEach(button => {
             button.addEventListener('click', function() {
                 const replyForm = document.getElementById(`reply-form-${this.dataset.commentId}`);
